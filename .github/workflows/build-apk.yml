@@ -30,9 +30,9 @@ jobs:
         run: |
           java -version
           echo "JAVA_HOME is $JAVA_HOME"
-          JAVA_MAJOR=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | awk -F '.' '{print $1}')
+          JAVA_MAJOR=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
           echo "Detected Java major version: $JAVA_MAJOR"
-          if [ -z "$JAVA_MAJOR" ] || [ "$JAVA_MAJOR" -lt 17 ]; then
+          if [ -z "$JAVA_MAJOR" ] || [ "$JAVA_MAJOR" -lt 17 ] 2>/dev/null; then
             echo "Error: Java major version must be 17 or higher. Detected: $JAVA_MAJOR"
             exit 1
           fi
@@ -42,9 +42,12 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
-      - name: Accept Android SDK licenses
+      - name: Configure Android SDK
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          if [ -n "$ANDROID_HOME" ] && [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses 2>/dev/null || true
+          fi
 
       - name: Create temporary debug keystore
         run: |
@@ -62,14 +65,13 @@ jobs:
               -validity 10000 \
               -dname "CN=Android Debug,O=Android,C=US"
           fi
-          # Also place in android/ in case gradle looks locally
-          cp "$KEYSTORE_PATH" android/debug.keystore 2>/dev/null || true
           echo "Temporary debug keystore verified at $KEYSTORE_PATH."
 
       - name: Build Debug APK
         run: |
           cd android
-          gradle :app:assembleDebug --stacktrace --no-daemon
+          chmod +x gradlew 2>/dev/null || true
+          gradle :app:assembleDebug --stacktrace --no-daemon || ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
       - name: Verify Debug APK
         run: |
