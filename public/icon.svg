@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#92400e" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Card -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Inner Store Glow -->
+  <circle cx="256" cy="256" r="190" fill="#f59e0b" opacity="0.08" />
+
+  <!-- Store Roof / Awning -->
+  <g filter="url(#shadow)">
+    <!-- Awning back bar -->
+    <path d="M120 190 L392 190 L372 250 L140 250 Z" fill="#d97706" />
+    <!-- Awning Scallops -->
+    <path d="M120 190 L174 190 L174 255 Q147 265 120 255 Z" fill="#f59e0b" />
+    <path d="M174 190 L228 190 L228 255 Q201 265 174 255 Z" fill="#b45309" />
+    <path d="M228 190 L284 190 L284 255 Q256 265 228 255 Z" fill="#f59e0b" />
+    <path d="M284 190 L338 190 L338 255 Q311 265 284 255 Z" fill="#b45309" />
+    <path d="M338 190 L392 190 L392 255 Q365 265 338 255 Z" fill="#f59e0b" />
+
+    <!-- Marketplace Store Body -->
+    <rect x="144" y="255" width="224" height="155" rx="16" fill="#fffbeb" />
+
+    <!-- Store Window & Door -->
+    <rect x="168" y="280" width="76" height="70" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="4" />
+    <line x1="206" y1="280" x2="206" y2="350" stroke="#d97706" stroke-width="3" />
+    <line x1="168" y1="315" x2="244" y2="315" stroke="#d97706" stroke-width="3" />
+
+    <!-- Door -->
+    <path d="M272 280 H324 V410 H272 Z" fill="#d97706" />
+    <circle cx="282" cy="345" r="4" fill="#fbbf24" />
+
+    <!-- Verified Local Seller Badge -->
+    <circle cx="370" cy="370" r="42" fill="url(#badgeGrad)" stroke="#78350f" stroke-width="4" />
+    <!-- Checkmark inside badge -->
+    <path d="M352 370 L365 383 L390 357" fill="none" stroke="#78350f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Marketplace Star Sparkles -->
+  <path d="M380 130 Q390 145 405 155 Q390 165 380 180 Q370 165 355 155 Q370 145 380 130 Z" fill="#fbbf24" />
+  <circle cx="140" cy="140" r="10" fill="#fde68a" />
+</svg>

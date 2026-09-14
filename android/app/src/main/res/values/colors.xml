@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_amber">#78350F</color>
+    <color name="primary_amber_light">#D97706</color>
+    <color name="background_stone">#F5F5F4</color>
+    <color name="surface_white">#FFFFFF</color>
+    <color name="text_stone_dark">#1C1917</color>
+</resources>

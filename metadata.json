@@ -1,0 +1,6 @@
+{
+  "name": "Local Seller Marketplace",
+  "description": "A high-performance local seller marketplace, POS register, inventory showcase, and multi-tenant merchant control system ready for Google Play Store.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

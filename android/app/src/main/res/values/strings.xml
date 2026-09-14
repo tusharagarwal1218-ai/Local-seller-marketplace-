@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Local Seller</string>
+    <string name="pos_title">POS Register</string>
+    <string name="showcase_title">Storefront</string>
+    <string name="inventory_title">Inventory</string>
+    <string name="sales_title">Sales Ledger</string>
+    <string name="settings_title">Settings</string>
+</resources>
