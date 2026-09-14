@@ -40,9 +40,14 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
+      - name: Accept Android SDK licenses
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+
       - name: Create temporary debug keystore
         run: |
-          KEYSTORE_PATH="android/debug.keystore"
+          mkdir -p ~/.android
+          KEYSTORE_PATH="$HOME/.android/debug.keystore"
           if [ ! -f "$KEYSTORE_PATH" ]; then
             echo "Generating debug keystore at $KEYSTORE_PATH..."
             keytool -genkey -v \
@@ -55,11 +60,9 @@ jobs:
               -validity 10000 \
               -dname "CN=Android Debug,O=Android,C=US"
           fi
-          if [ ! -f "$KEYSTORE_PATH" ]; then
-            echo "Error: Failed to create temporary debug keystore."
-            exit 1
-          fi
-          echo "Temporary debug keystore verified."
+          # Also place in android/ in case gradle looks locally
+          cp "$KEYSTORE_PATH" android/debug.keystore 2>/dev/null || true
+          echo "Temporary debug keystore verified at $KEYSTORE_PATH."
 
       - name: Build Debug APK
         run: |
@@ -128,11 +131,14 @@ jobs:
           > **Note:** Sideloading this APK may trigger standard Android unknown-source prompts during installation.
           EOF
 
-          gh release create "$RELEASE_TAG" "$ASSET_PATH" \
+          if ! gh release create "$RELEASE_TAG" "$ASSET_PATH" \
             --target "${{ github.sha }}" \
             --title "$RELEASE_TITLE" \
             --notes-file release_notes.md \
-            --latest
+            --latest; then
+            echo "::error::gh release create failed. This is usually caused by GitHub Workflow Permissions set to Read-only."
+            exit 1
+          fi
 
       - name: Report APK download result
         if: always()
@@ -152,8 +158,16 @@ jobs:
             echo "- **Direct Asset:** \`${{ steps.prepare_asset.outputs.asset_name }}\`" >> $GITHUB_STEP_SUMMARY
             echo "- **Workflow Artifact:** \`app-debug-apk\` is also preserved in Actions." >> $GITHUB_STEP_SUMMARY
           else
-            echo "::warning::GitHub Release creation did not complete or was skipped. However, the APK build succeeded."
-            echo "### ⚠️ Debug APK Build Notice" >> $GITHUB_STEP_SUMMARY
-            echo "The debug APK was built and verified successfully!" >> $GITHUB_STEP_SUMMARY
-            echo "- The APK is available to download under the **Artifacts** section as \`app-debug-apk\`." >> $GITHUB_STEP_SUMMARY
+            echo "::warning::GitHub Release publishing failed or was skipped. However, your APK build succeeded!"
+            echo "### ⚠️ Notice: APK Build Succeeded (Release Publishing Failed)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "1. **How to download your APK right now:**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Scroll to the bottom of this Actions run page to the **Artifacts** section." >> $GITHUB_STEP_SUMMARY
+            echo "   - Click **\`app-debug-apk\`** to download your APK directly." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "2. **How to fix GitHub Releases for future runs (HTTP 403 fix):**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Go to your repository on GitHub: **Settings** > **Actions** > **General**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Scroll down to **Workflow permissions**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Change from *'Read repository contents'* to **'Read and write permissions'**" >> $GITHUB_STEP_SUMMARY
+            echo "   - Click **Save**, then re-run the workflow." >> $GITHUB_STEP_SUMMARY
           fi
